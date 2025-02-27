@@ -4,9 +4,12 @@ import { useState } from 'react'
 import Image from 'next/image'
 import Logo from '../app/logo.svg'
 import { User, LogOut, UserCircle2 } from 'lucide-react'
+import { usePathname } from 'next/navigation'
+import { cn } from '../utils'
 
 const Header = () => {
     const [menuOpen, setMenuOpen] = useState(false)
+    const pathname = usePathname()
 
     const handleLogout = () => {
         localStorage.removeItem('access')
@@ -18,7 +21,7 @@ const Header = () => {
     }
 
     return (
-        <header className="bg-black/30 backdrop-blur-2xl fixed w-[100vw] px-4 z-50 top-0">
+        <header className={cn("bg-black/30 backdrop-blur-2xl fixed w-[100vw] px-4 z-50 top-0", pathname === '/auth' && 'hidden')}>
             <div className="max-w-[1440px] mx-auto py-3 text-[#f0f0f5] flex items-center justify-between relative">
                 <div className="text-4xl font-bold flex items-end">
                     <Image src={Logo} width={70} height={70} alt="Logo" />
