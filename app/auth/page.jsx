@@ -59,7 +59,7 @@ export default function AuthPage() {
                 if (!isSignUp) {
                     localStorage.setItem('access', response.data.access)
                 }
-                window.location.href = '/'
+                window.location.href = '/posts'
             } catch (error) {
                 console.log(error)
             }
