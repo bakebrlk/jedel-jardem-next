@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import Image from 'next/image'
 import Logo from '../app/logo.svg'
 import { User, LogOut, UserCircle2 } from 'lucide-react'
@@ -21,12 +22,20 @@ const Header = () => {
     }
 
     return (
-        <header className={cn("bg-black/30 backdrop-blur-2xl fixed w-[100vw] px-4 z-50 top-0", pathname === '/auth' && 'hidden')}>
+        <header
+            className={cn(
+                'bg-black/30 backdrop-blur-2xl fixed w-[100vw] px-4 z-50 top-0',
+                pathname === '/auth' && 'hidden'
+            )}
+        >
             <div className="max-w-[1440px] mx-auto py-3 text-[#f0f0f5] flex items-center justify-between relative">
-                <div className="text-4xl font-bold flex items-end">
+                <Link
+                    href="/posts"
+                    className="text-4xl font-bold flex items-end"
+                >
                     <Image src={Logo} width={70} height={70} alt="Logo" />
                     <h1 className="py-2 ml-4">Jedel Jardem</h1>
-                </div>
+                </Link>
                 <input
                     type="text"
                     className="border border-[#928fab] bg-[#010817] px-3 py-2 text-[#f0f0f5] placeholder:text-[#94a3b8] placeholder:text-xl max-w-[400px] w-full rounded-md"
@@ -41,7 +50,12 @@ const Header = () => {
                     </div>
                     {menuOpen && (
                         <div className="absolute right-0 mt-2 w-48 bg-[#010817] text-white shadow-lg rounded-md overflow-hidden">
-                            <button className="flex items-center px-4 py-3 w-full hover:bg-white/20 transition">
+                            <button
+                                onClick={() =>
+                                    (window.location.href = '/profile')
+                                }
+                                className="flex items-center px-4 py-3 w-full hover:bg-white/20 transition"
+                            >
                                 <UserCircle2 className="mr-2" /> Profile
                             </button>
                             <button

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { SquarePlus, X, User, SendHorizontal } from 'lucide-react'
-import $api from '../http'
+import $api from '../../http'
 
 export default function Home() {
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -21,11 +21,21 @@ export default function Home() {
         setImages([...images, ...files])
     }
 
+    const loadData = () => {
+        setLoading(true)
+        $api.get('/posts')
+            .then((r) => {
+                setPosts(r.data)
+                console.log(r.data)
+            })
+            .catch((err) => console.error(err.response.data))
+            .finally(() => setLoading(false))
+    }
+
     const submitPost = async () => {
         const formData = new FormData()
         formData.append('title', title)
         formData.append('description', description)
-        // images.forEach((image) => formData.append('files', image))
 
         try {
             const response = await $api.post('/posts', formData, {
@@ -36,6 +46,7 @@ export default function Home() {
             setTitle('')
             setDescription('')
             setImages([])
+            loadData()
         } catch (error) {
             console.error(
                 'Error creating post:',
@@ -45,17 +56,6 @@ export default function Home() {
     }
 
     useEffect(() => {
-        const loadData = () => {
-            setLoading(true)
-            $api.get('/posts')
-                .then((r) => {
-                    setPosts(r.data)
-                    console.log(r.data)
-                })
-                .catch((err) => console.error(err.response.data))
-                .finally(() => setLoading(false))
-        }
-
         loadData()
     }, [])
 
@@ -78,10 +78,7 @@ export default function Home() {
                                   className="flex flex-col space-y-4 border border-l-0 border-r-0 py-3 border-b-0"
                               >
                                   <div className="flex items-center">
-                                      <div
-                                          className="bg-white/30 size-[50px] rounded-full flex justify-center items-center cursor-pointer"
-                                          onClick={() => setMenuOpen(!menuOpen)}
-                                      >
+                                      <div className="bg-white/30 size-[50px] rounded-full flex justify-center items-center cursor-pointer">
                                           <User size={30} />
                                       </div>
 
@@ -107,50 +104,74 @@ export default function Home() {
                 </div>
             </main>
 
-            {isModalOpen && <CretePostModal />}
+            {isModalOpen && (
+                <CretePostModal
+                    isModalOpen={isModalOpen}
+                    setIsModalOpen={setIsModalOpen}
+                    title={title}
+                    setTitle={setTitle}
+                    description={description}
+                    setDescription={setDescription}
+                    images={images}
+                    setImages={setImages}
+                    handleImageUpload={handleImageUpload}
+                    submitPost={submitPost}
+                />
+            )}
         </div>
     )
+}
 
-    function CretePostModal() {
-        return (
-            <div className="fixed inset-0 z-[1000] bg-black/50 flex items-center justify-center">
-                <div className="bg-[#1a1a2e] p-5 rounded-lg w-[500px] text-white relative">
-                    <button
-                        className="absolute top-3 right-3 cursor-pointer"
-                        onClick={() => setIsModalOpen(false)}
-                    >
-                        <X />
-                    </button>
-                    <h2 className="text-2xl mb-4">Create New Post</h2>
-                    <input
-                        type="text"
-                        placeholder="Title"
-                        className="w-full p-2 mb-3 bg-gray-700 rounded"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                    />
-                    <textarea
-                        placeholder="Description"
-                        className="w-full p-2 mb-3 bg-gray-700 rounded"
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                    />
-                    <input
-                        type="file"
-                        multiple
-                        accept="image/*"
-                        className="w-full mb-3"
-                        onChange={handleImageUpload}
-                    />
-                    <p>{images.length} / 5 images uploaded</p>
-                    <button
-                        className="w-full bg-blue-600 p-2 rounded mt-3 cursor-pointer"
-                        onClick={submitPost}
-                    >
-                        Submit Post
-                    </button>
-                </div>
+function CretePostModal({
+    isModalOpen,
+    setIsModalOpen,
+    title,
+    setTitle,
+    description,
+    setDescription,
+    images,
+    setImages,
+    handleImageUpload,
+    submitPost,
+}) {
+    return (
+        <div className="fixed inset-0 z-[1000] bg-black/50 flex items-center justify-center">
+            <div className="bg-[#1a1a2e] p-5 rounded-lg w-[500px] text-white relative">
+                <button
+                    className="absolute top-3 right-3 cursor-pointer"
+                    onClick={() => setIsModalOpen(false)}
+                >
+                    <X />
+                </button>
+                <h2 className="text-2xl mb-4">Create New Post</h2>
+                <input
+                    type="text"
+                    placeholder="Title"
+                    className="w-full p-2 mb-3 bg-gray-700 rounded"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                />
+                <textarea
+                    placeholder="Description"
+                    className="w-full p-2 mb-3 bg-gray-700 rounded"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                />
+                <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    className="w-full mb-3"
+                    onChange={handleImageUpload}
+                />
+                <p>{images.length} / 5 images uploaded</p>
+                <button
+                    className="w-full bg-blue-600 p-2 rounded mt-3 cursor-pointer"
+                    onClick={submitPost}
+                >
+                    Submit Post
+                </button>
             </div>
-        )
-    }
+        </div>
+    )
 }
